@@ -1,15 +1,6 @@
 from django.db import models
 from .person import Person  # Assuming Person model is defined in person.py
 
-class Location(models.Model):
-    user = models.OneToOneField(Person, on_delete=models.CASCADE, primary_key=True)
-    city = models.CharField(max_length=100)
-    state = models.CharField(max_length=100)
-    country = models.CharField(max_length=100)
-
-    def __str__(self):
-        return f"{self.city}, {self.state}, {self.country}"
-
 class UserProfile(models.Model):
     user = models.OneToOneField(Person, on_delete=models.CASCADE, primary_key=True)
     profile_video = models.FileField(upload_to=user_video_upload_path, null=True, blank=True)
@@ -33,4 +24,21 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return self.username
-
+@classmethod
+    def create_from_person(cls, person,profile_video=None):
+        user_profile = cls(
+            user=person,
+            name=person.name,
+            relationship_status=person.relationship_status,
+            sexual_orientation=person.sexual_orientation,
+            race=person.race,
+            phone_number=person.phone_number,
+            social_media_api=person.social_media_api,
+            birth_date=person.birth_date,
+            email=person.email,
+            username=person.email
+        )
+        if profile_video:
+            user_profile.profile_video = profile_video
+        user_profile.save()
+        return user_profile
